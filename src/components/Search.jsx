@@ -9,8 +9,6 @@ import {
   updateDoc,
   serverTimestamp,
   getDoc,
-  orderBy,
-  limit,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { AuthContext } from "../context/AuthContext";
@@ -35,29 +33,33 @@ const Search = () => {
 
       setIsLoading(true);
       try {
-        // Search for users whose displayName starts with the input
-        const q = query(
-          collection(db, "users"),
-          orderBy("displayName"),
-          limit(5)
-        );
-
+        console.log("Searching for:", username);
+        // Get all users and filter client-side (simpler approach)
+        const q = query(collection(db, "users"));
         const querySnapshot = await getDocs(q);
         const users = [];
         
         querySnapshot.forEach((doc) => {
           const userData = doc.data();
+          console.log("User data:", userData);
           // Filter users whose name contains the search term and exclude current user
           if (
             userData.uid !== currentUser.uid &&
+            userData.displayName &&
             userData.displayName.toLowerCase().includes(username.toLowerCase())
           ) {
             users.push(userData);
           }
         });
 
-        setSuggestions(users);
-        setErr(users.length === 0);
+        // Limit to 5 results and sort by name
+        const sortedUsers = users
+          .sort((a, b) => a.displayName.localeCompare(b.displayName))
+          .slice(0, 5);
+
+        console.log("Found users:", sortedUsers);
+        setSuggestions(sortedUsers);
+        setErr(sortedUsers.length === 0);
       } catch (error) {
         console.error("Search suggestions error:", error);
         setSuggestions([]);

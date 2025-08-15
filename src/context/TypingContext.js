@@ -12,7 +12,7 @@ export const TypingContextProvider = ({ children }) => {
   const { data } = useContext(ChatContext);
 
   const setTyping = async (isTyping) => {
-    if (data.chatId === "null" || !currentUser) return;
+    if (!data || data.chatId === "null" || !currentUser) return;
 
     try {
       await updateDoc(doc(db, "chats", data.chatId), {
@@ -27,7 +27,7 @@ export const TypingContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (data.chatId === "null") {
+    if (!data || !currentUser || data.chatId === "null") {
       setTypingUsers({});
       return;
     }
@@ -52,7 +52,7 @@ export const TypingContextProvider = ({ children }) => {
     });
 
     return () => unsubscribe();
-  }, [data.chatId, currentUser.uid]);
+  }, [data?.chatId, currentUser?.uid, currentUser, data]);
 
   // Clean up expired typing indicators
   useEffect(() => {

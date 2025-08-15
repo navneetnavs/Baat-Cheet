@@ -42,6 +42,7 @@ const Input = () => {
     // Clear the input immediately and stop typing indicator
     setText("");
     setImg(null);
+    setImagePreview(null);
     setTyping(false);
 
     try {
@@ -51,6 +52,10 @@ const Input = () => {
         const uploadTask = uploadBytesResumable(storageRef, messageImg);
 
         uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            // Progress tracking (optional)
+          },
           (error) => {
             console.error("Error uploading image:", error);
           },
@@ -101,7 +106,7 @@ const Input = () => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (data.chatId !== "null") {
-        setTyping(data.chatId, text.length > 0);
+        setTyping(text.length > 0);
       }
     }, 300);
 
@@ -181,7 +186,7 @@ const Input = () => {
             onChange={handleImageSelect}
           />
           <label htmlFor="img" className={data.chatId === "null" ? "disabled" : ""}>
-            <img src={Img} alt="Attach image" />
+            <img src={Img} alt="Attach" />
           </label>
           
           <button 

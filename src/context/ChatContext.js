@@ -12,6 +12,7 @@ import {
     const INITIAL_STATE = {
       chatId: "null",
       user: {},
+      messages: []
     };
   
     const chatReducer = (state, action) => {
@@ -35,6 +36,13 @@ import {
           return {
             user: action.payload,
             chatId: newChatId,
+            messages: []
+          };
+
+        case "UPDATE_MESSAGES":
+          return {
+            ...state,
+            messages: action.payload || []
           };
 
         default:
@@ -45,7 +53,7 @@ import {
     const [state, dispatch] = useReducer(chatReducer, INITIAL_STATE);
   
     return (
-      <ChatContext.Provider value={{ data:state, dispatch }}>
+      <ChatContext.Provider value={{ data: state, dispatch }}>
         {children}
       </ChatContext.Provider>
     );
