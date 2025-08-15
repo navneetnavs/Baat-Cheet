@@ -3,12 +3,18 @@ import React, { useContext, useEffect, useState } from "react";
 import { ChatContext } from "../context/ChatContext";
 import { db } from "../firebase";
 import Message from "./Message";
+import TypingIndicator from "./TypingIndicator";
 
 const Messages = () => {
   const [messages, setMessages] = useState([]);
   const { data } = useContext(ChatContext);
 
   useEffect(() => {
+    if (data.chatId === "null") {
+      setMessages([]);
+      return;
+    }
+
     const unSub = onSnapshot(doc(db, "chats", data.chatId), (doc) => {
       doc.exists() && setMessages(doc.data().messages);
     });
@@ -25,6 +31,7 @@ const Messages = () => {
       {messages.map((m) => (
         <Message message={m} key={m.id} />
       ))}
+      <TypingIndicator />
     </div>
   );
 };

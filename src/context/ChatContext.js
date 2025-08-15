@@ -17,14 +17,26 @@ import {
     const chatReducer = (state, action) => {
       switch (action.type) {
         case "CHANGE_USER":
+          if (!currentUser || !action.payload) {
+            console.error("ChatContext: Missing currentUser or payload");
+            return state;
+          }
+          
+          const newChatId = currentUser.uid > action.payload.uid
+            ? currentUser.uid + action.payload.uid
+            : action.payload.uid + currentUser.uid;
+          
+          console.log("ChatContext: CHANGE_USER", {
+            user: action.payload,
+            chatId: newChatId,
+            currentUser: currentUser.uid
+          });
+          
           return {
             user: action.payload,
-            chatId:
-              currentUser.uid > action.payload.uid
-                ? currentUser.uid + action.payload.uid
-                : action.payload.uid + currentUser.uid,
+            chatId: newChatId,
           };
-  
+
         default:
           return state;
       }
